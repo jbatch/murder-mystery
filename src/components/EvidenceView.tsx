@@ -1,6 +1,8 @@
 // components/EvidenceView.tsx
 import { Evidence } from "@/types";
 import { Card, CardContent } from "./ui/card";
+import React from "react";
+import EvidenceTooltip from "./EvidenceTooltip";
 
 const EvidenceView = ({ evidence }: { evidence?: Evidence[] }) => (
   <div className="grid gap-4 mt-4">
@@ -28,10 +30,42 @@ const EvidenceView = ({ evidence }: { evidence?: Evidence[] }) => (
               <span className="font-medium">True significance:</span>{" "}
               {item.true_significance}
             </p>
+            <p>
+              <span className="font-medium">Requires Discovery:</span>{" "}
+              {item.requires_discovery.map((evidenceId, k) => (
+                <React.Fragment key={k}>
+                  {k > 0 && ", "}
+                  <EvidenceTooltip evidenceId={evidenceId} evidence={evidence}>
+                    {evidenceId}
+                  </EvidenceTooltip>
+                </React.Fragment>
+              ))}
+            </p>
+            <p>
+              <span className="font-medium">Reveals:</span>{" "}
+              {item.reveals.map((evidenceId, k) => (
+                <React.Fragment key={k}>
+                  {k > 0 && ", "}
+                  <EvidenceTooltip evidenceId={evidenceId} evidence={evidence}>
+                    {evidenceId}
+                  </EvidenceTooltip>
+                </React.Fragment>
+              ))}
+            </p>
             {item.requires_discovery.length > 0 && (
               <p>
                 <span className="font-medium">Requires:</span>{" "}
-                {item.requires_discovery.join(", ")}
+                {item.requires_discovery.map((evidenceId, k) => (
+                  <React.Fragment key={k}>
+                    {k > 0 && ", "}
+                    <EvidenceTooltip
+                      evidenceId={evidenceId}
+                      evidence={evidence}
+                    >
+                      {evidenceId}
+                    </EvidenceTooltip>
+                  </React.Fragment>
+                ))}
               </p>
             )}
           </div>

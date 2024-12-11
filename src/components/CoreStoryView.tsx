@@ -34,6 +34,7 @@ const CoreStoryView = ({ story }: { story?: CoreStory }) => (
             <h3 className="font-semibold">Murder Method</h3>
             <p>Weapon: {story.murder_method.weapon}</p>
             <p>Circumstances: {story.murder_method.circumstances}</p>
+            <p>Location: {story.murder_method.location}</p>
           </div>
           <div>
             <h3 className="font-semibold">Key Twist</h3>

@@ -18,6 +18,7 @@ export interface CoreStory {
   murder_method: {
     weapon: string;
     circumstances: string;
+    location: string;
   };
   key_twist: string;
 }

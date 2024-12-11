@@ -35,7 +35,8 @@ Format your response as a JSON object with the following structure:
     },
     "murder_method": {
         "weapon": string,
-        "circumstances": string
+        "circumstances": string,
+        "location": string
     },
     "key_twist": string
 }`;
@@ -43,10 +44,11 @@ Format your response as a JSON object with the following structure:
 // Stage 2. Characters
 export const CHARACTERS_PROMPT = (story: CoreStory) => `Given this core mystery:
     Setting: ${story.setting.location} in ${story.setting.time_period}
-    Victim: ${story.victim.name}, ${story.victim.occupation}, ${story.victim.reason_targeted}
-    Murderer: ${story.murderer.name}, ${story.murderer.occupation}, ${story.murderer.motive}
+    Victim: ${JSON.stringify(story.victim)}
+    Murderer: ${JSON.stringify(story.murderer)}
+    Murder Method: ${JSON.stringify(story.murder_method)}
 
-    Create a cast of 5-7 additional suspects/witnesses who would be present at the scene.
+    Create a cast of the murderer and 5-7 additional suspects/witnesses who would be present at the scene.
     Each character should have:
     1. A connection to the victim
     2. A potential motive for murder (even if they're innocent)
@@ -75,8 +77,9 @@ export const TIMELINE_PROMPT = (
   `Given this murder mystery:
     Setting: ${story.setting.location} in ${story.setting.time_period}
     Time of Murder: ${story.setting.specific_time}
-    Victim: ${story.victim.name}
-    Murder Method: ${story.murder_method.circumstances}
+    Victim: ${JSON.stringify(story.victim)}
+    Murderer: ${JSON.stringify(story.murderer)}
+    Murder Method: ${JSON.stringify(story.murder_method)}
 
     Create a detailed timeline of events spanning from 2 hours before to 2 hours after the murder.
     Include movements and actions for:
@@ -108,9 +111,8 @@ export const LOCATIONS_PROMPT = (
   timeline: TimelineEvent[]
 ) => `Based on this murder mystery:
 Setting: ${story.setting.location} in ${story.setting.time_period}
-Murder Location: ${
-  timeline.find((t) => t.event.toLowerCase().includes("murder"))?.location
-}
+Murder Location: ${story.murder_method.location}
+Timeline: ${timeline.map((t) => JSON.stringify(t)).join("\n")}
 
 Create a complete map of all relevant locations for the investigation. For each location include:
 1. How it connects to other locations
@@ -141,16 +143,17 @@ export const EVIDENCE_PROMPT = (
   timeline: TimelineEvent[],
   locations: Location[]
 ) => `Given this murder mystery context:
-Victim: ${story.victim.name}
-Murder Method: ${story.murder_method.weapon}
+Victim: ${JSON.stringify(story.victim)}
+Murderer: ${JSON.stringify(story.murderer)}
+Murder Method: ${JSON.stringify(story.murder_method)}
 Key Twist: ${story.key_twist}
-
 Timeline: ${timeline.map((event) => JSON.stringify(event)).join("\n")}
 
 And these locations:
 ${locations.map((l) => `- ${l.name}: ${l.description}`).join("\n")}
 
-Create a network of discoverable evidence. For each piece of evidence, specify:
+Create a network of discoverable evidence. Evidence can be either items found in locations or information learned from interviews.
+For each piece of evidence, specify:
 1. Where it can be found
 2. What it initially appears to mean
 3. Its true significance
@@ -186,8 +189,9 @@ export const INTERVIEW_PROMPT = (
   characters: Character[],
   evidence: Evidence[]
 ) => `For this murder mystery:
-Victim: ${story.victim.name}
-Murderer: ${story.murderer.name}
+Victim: ${JSON.stringify(story.victim)}
+Murderer: ${JSON.stringify(story.murderer)}
+Murder Method: ${JSON.stringify(story.murder_method)}
 Key Twist: ${story.key_twist}
 
 Characters:
@@ -236,8 +240,9 @@ export const SOLUTION_PROMPT = (
   evidence: Evidence[],
   interviews: CharacterKnowledge[]
 ) => `For this murder mystery:
-Murderer: ${story.murderer.name}
-Motive: ${story.murderer.motive}
+Victim: ${JSON.stringify(story.victim)}
+Murderer: ${JSON.stringify(story.murderer)}
+Murder Method: ${JSON.stringify(story.murder_method)}
 Key Twist: ${story.key_twist}
 
 Character Knowledge:
